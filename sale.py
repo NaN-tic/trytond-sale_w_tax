@@ -14,7 +14,6 @@ _ZERO = Decimal('0.00')
 
 class SaleLine:
     __name__ = 'sale.line'
-    print "carregat2"
     unit_price_w_tax = fields.Function(fields.Numeric('Unit Price with Tax',
             digits=(16, Eval('_parent_sale', {}).get('currency_digits',
                     Eval('currency_digits', 2))),
