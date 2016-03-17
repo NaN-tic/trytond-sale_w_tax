@@ -70,8 +70,8 @@ class SaleLine:
                 line.unit_price or Decimal('0.0'),
                 line.quantity or 0.0)
             tax_amount = sum([t['amount'] for t in tax_list], Decimal('0.0'))
-            amount = line.amount
-            return (line.amount if amount else _ZERO) + tax_amount
+            amount = sum([t['base'] for t in tax_list], Decimal('0.0'))
+            return amount + tax_amount
 
         for line in lines:
             amount = Decimal('0.0')
