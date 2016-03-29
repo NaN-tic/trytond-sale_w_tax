@@ -8,11 +8,11 @@ from trytond.transaction import Transaction
 from trytond.pyson import Eval
 
 __all__ = ['SaleLine']
-__metaclass__ = PoolMeta
 _ZERO = Decimal('0.00')
 
 
 class SaleLine:
+    __metaclass__ = PoolMeta
     __name__ = 'sale.line'
     unit_price_w_tax = fields.Function(fields.Numeric('Unit Price with Tax',
             digits=(16, Eval('_parent_sale', {}).get('currency_digits',
