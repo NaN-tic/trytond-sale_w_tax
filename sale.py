@@ -66,11 +66,18 @@ class SaleLine:
         unit_price_w_tax = {}
 
         def compute_amount_with_tax(line):
-            tax_list = Tax.compute(line.taxes,
-                line.unit_price or Decimal('0.0'),
-                line.quantity or 0.0)
-            tax_amount = sum([t['amount'] for t in tax_list], Decimal('0.0'))
-            amount = sum([t['base'] for t in tax_list], Decimal('0.0'))
+            if line.taxes:
+                tax_list = Tax.compute(line.taxes,
+                    line.unit_price or Decimal('0.0'),
+                    line.quantity or 0.0)
+
+                tax_amount = sum([t['amount'] for t in tax_list], Decimal('0.0'))
+                amount = sum([t['base'] for t in tax_list], Decimal('0.0'))
+            else:
+                tax_amount = Decimal('0.0')
+                amount = Decimal('0.0')
+                if line.unit_price:
+                    amount = line.unit_price * Decimal(line.quantity)
             return amount + tax_amount
 
         for line in lines:
