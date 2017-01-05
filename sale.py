@@ -5,34 +5,34 @@ from decimal import Decimal
 from trytond.model import fields
 from trytond.pool import PoolMeta, Pool
 from trytond.transaction import Transaction
-from trytond.pyson import Eval
+from trytond.pyson import Bool, Eval, Not
 
 __all__ = ['SaleLine']
-__metaclass__ = PoolMeta
 _ZERO = Decimal('0.00')
 
 
 class SaleLine:
+    __metaclass__ = PoolMeta
     __name__ = 'sale.line'
     unit_price_w_tax = fields.Function(fields.Numeric('Unit Price with Tax',
-            digits=(16, Eval('_parent_sale', {}).get('currency_digits',
-                    Eval('currency_digits', 2))),
-            states={
-                'invisible': Eval('type') != 'line',
-                },
-            depends=['type', 'currency_digits']), 'get_price_with_tax')
+        digits=(16, Eval('_parent_sale', {}).get('currency_digits',
+                Eval('currency_digits', 2))),
+        states={
+            'invisible': Eval('type') != 'line',
+            },
+        depends=['type', 'currency_digits']), 'get_price_with_tax')
     amount_w_tax = fields.Function(fields.Numeric('Amount with Tax',
-            digits=(16, Eval('_parent_sale', {}).get('currency_digits',
-                    Eval('currency_digits', 2))),
-            states={
-                'invisible': ~Eval('type').in_(['line', 'subtotal']),
-                },
-            depends=['type', 'currency_digits']), 'get_price_with_tax')
+        digits=(16, Eval('_parent_sale', {}).get('currency_digits',
+                Eval('currency_digits', 2))),
+        states={
+            'invisible': ~Eval('type').in_(['line', 'subtotal']),
+            },
+        depends=['type', 'currency_digits']), 'get_price_with_tax')
     currency_digits = fields.Function(fields.Integer('Currency Digits'),
         'on_change_with_currency_digits')
     currency = fields.Many2One('currency.currency', 'Currency',
         states={
-            'required': ~Eval('sale'),
+            'required': Not(Bool(Eval('sale'))),
             },
         depends=['sale'])
 
@@ -56,7 +56,6 @@ class SaleLine:
         if self.currency:
             return self.currency.digits
         return 2
-
 
     @classmethod
     def get_price_with_tax(cls, lines, names):
