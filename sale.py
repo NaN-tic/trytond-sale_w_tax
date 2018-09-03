@@ -11,8 +11,7 @@ __all__ = ['SaleLine']
 _ZERO = Decimal('0.00')
 
 
-class SaleLine:
-    __metaclass__ = PoolMeta
+class SaleLine(metaclass=PoolMeta):
     __name__ = 'sale.line'
     unit_price_w_tax = fields.Function(fields.Numeric('Unit Price with Tax',
         digits=(16, Eval('_parent_sale', {}).get('currency_digits',
@@ -111,7 +110,7 @@ class SaleLine:
             'amount_w_tax': amount_w_tax,
             'unit_price_w_tax': unit_price_w_tax,
             }
-        for key in result.keys():
+        for key in list(result.keys()):
             if key not in names:
                 del result[key]
         return result
