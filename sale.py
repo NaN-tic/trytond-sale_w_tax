@@ -65,7 +65,7 @@ class SaleLine(metaclass=PoolMeta):
 
         def compute_amount_with_tax(line):
             product_customer_taxes = line.product.template.customer_taxes_used
-            party = line.party
+            party = line.party or (line.sale and line.sale.party or None)
 
             party_taxes = []
             pattern = {}
