@@ -65,8 +65,28 @@ class SaleLine:
         unit_price_w_tax = {}
 
         def compute_amount_with_tax(line):
-            if line.taxes:
-                tax_list = Tax.compute(line.taxes,
+            product_customer_taxes = line.product.template.customer_taxes_used
+            party = line.party
+
+            party_taxes = []
+            pattern = {}
+            for tax in product_customer_taxes:
+                if party and party.customer_tax_rule:
+                    tax_ids = party.customer_tax_rule.apply(tax, pattern)
+                    if tax_ids:
+                        party_taxes.extend(tax_ids)
+                    continue
+                party_taxes.append(tax.id)
+            if party and party.customer_tax_rule:
+                tax_ids = party.customer_tax_rule.apply(None, pattern)
+                if tax_ids:
+                    party_taxes.extend(tax_ids)
+            line_taxes = Tax.browse(party_taxes) if party_taxes else []
+            if not line_taxes:
+                line_taxes = product_customer_taxes
+
+            if line_taxes:
+                tax_list = Tax.compute(line_taxes,
                     line.unit_price or Decimal('0.0'),
                     line.quantity or 0.0)
 
