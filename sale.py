@@ -5,7 +5,9 @@ from decimal import Decimal
 from trytond.model import fields
 from trytond.pool import PoolMeta, Pool
 from trytond.transaction import Transaction
-from trytond.pyson import Bool, Eval, Not
+from trytond.pyson import Eval
+from trytond.modules.product import price_digits
+from trytond.modules.currency.fields import Monetary
 
 __all__ = ['SaleLine']
 _ZERO = Decimal('0.00')
@@ -13,48 +15,18 @@ _ZERO = Decimal('0.00')
 
 class SaleLine(metaclass=PoolMeta):
     __name__ = 'sale.line'
-    unit_price_w_tax = fields.Function(fields.Numeric('Unit Price with Tax',
-        digits=(16, Eval('_parent_sale', {}).get('currency_digits',
-                Eval('currency_digits', 2))),
+    unit_price_w_tax = fields.Function(Monetary('Unit Price with Tax',
+        digits=price_digits, currency='currency',
         states={
             'invisible': Eval('type') != 'line',
             },
-        depends=['type', 'currency_digits']), 'get_price_with_tax')
-    amount_w_tax = fields.Function(fields.Numeric('Amount with Tax',
-        digits=(16, Eval('_parent_sale', {}).get('currency_digits',
-                Eval('currency_digits', 2))),
+        depends=['type']), 'get_price_with_tax')
+    amount_w_tax = fields.Function(Monetary('Amount with Tax',
+        digits='currency', currency='currency',
         states={
             'invisible': ~Eval('type').in_(['line', 'subtotal']),
             },
-        depends=['type', 'currency_digits']), 'get_price_with_tax')
-    currency_digits = fields.Function(fields.Integer('Currency Digits'),
-        'on_change_with_currency_digits')
-    currency = fields.Many2One('currency.currency', 'Currency',
-        states={
-            'required': Not(Bool(Eval('sale'))),
-            },
-        depends=['sale'])
-
-    @staticmethod
-    def default_currency_digits():
-        Company = Pool().get('company.company')
-        if Transaction().context.get('company'):
-            company = Company(Transaction().context['company'])
-            return company.currency.digits
-        return 2
-
-    @staticmethod
-    def default_currency():
-        Company = Pool().get('company.company')
-        if Transaction().context.get('company'):
-            company = Company(Transaction().context['company'])
-            return company.currency.id
-
-    @fields.depends('currency')
-    def on_change_with_currency_digits(self, name=None):
-        if self.currency:
-            return self.currency.digits
-        return 2
+        depends=['type']), 'get_price_with_tax')
 
     @classmethod
     def get_price_with_tax(cls, lines, names):
