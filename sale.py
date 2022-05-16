@@ -40,7 +40,7 @@ class SaleLine(metaclass=PoolMeta):
             if line.taxes:
                 tax_list = Tax.compute(line.taxes,
                     line.unit_price or Decimal('0.0'),
-                    line.quantity or 0.0)
+                    line.quantity or 0.0, line.tax_date)
                 tax_amount = sum([t['amount'] for t in tax_list], Decimal('0.0'))
             return line.amount + tax_amount
 
