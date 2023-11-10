@@ -97,26 +97,9 @@ class SaleLine(metaclass=PoolMeta):
         return SaleLine.get_price_with_tax([self],
             ['amount_w_tax'])['amount_w_tax'][self.id]
 
-
-class SaleLineDiscount(metaclass=PoolMeta):
-    __name__ = 'sale.line'
-
-    @fields.depends('discount')
-    def on_change_with_unit_price_w_tax(self, name=None):
-        return super().on_change_with_unit_price_w_tax(name)
-
-    @fields.depends('discount')
-    def on_change_with_amount_w_tax(self, name=None):
-        return super().on_change_with_amount_w_tax(name)
-
-
-class SaleLineThreeDiscount(metaclass=PoolMeta):
-    __name__ = 'sale.line'
-
-    @fields.depends('discount1', 'discount2', 'discount3')
-    def on_change_with_unit_price_w_tax(self, name=None):
-        return super().on_change_with_unit_price_w_tax(name)
-
-    @fields.depends('discount1', 'discount2', 'discount3')
-    def on_change_with_amount_w_tax(self, name=None):
-        return super().on_change_with_amount_w_tax(name)
+    @fields.depends(methods=['on_change_with_unit_price_w_tax',
+        'on_change_with_amount_w_tax'])
+    def update_prices(self):
+        super().update_prices()
+        self.unit_price_w_tax = self.on_change_with_unit_price_w_tax()
+        self.amount_w_tax = self.on_change_with_amount_w_tax()

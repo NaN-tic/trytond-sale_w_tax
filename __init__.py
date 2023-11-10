@@ -8,11 +8,3 @@ def register():
     Pool.register(
         sale.SaleLine,
         module='sale_w_tax', type_='model')
-    Pool.register(
-        sale.SaleLineDiscount,
-        module='sale_w_tax', type_='model',
-        depends=['sale_discount'])
-    Pool.register(
-        sale.SaleLineThreeDiscount,
-        module='sale_w_tax', type_='model',
-        depends=['sale_3_discounts'])
