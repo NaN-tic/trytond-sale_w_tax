@@ -96,3 +96,10 @@ class SaleLine(metaclass=PoolMeta):
             self.sale = Transaction().context.get('sale')
         return SaleLine.get_price_with_tax([self],
             ['amount_w_tax'])['amount_w_tax'][self.id]
+
+    @fields.depends(methods=['on_change_with_unit_price_w_tax',
+        'on_change_with_amount_w_tax'])
+    def update_prices(self):
+        super().update_prices()
+        self.unit_price_w_tax = self.on_change_with_unit_price_w_tax()
+        self.amount_w_tax = self.on_change_with_amount_w_tax()
