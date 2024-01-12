@@ -19,14 +19,12 @@ class SaleLine(metaclass=PoolMeta):
         digits=price_digits, currency='currency',
         states={
             'invisible': Eval('type') != 'line',
-            },
-        depends=['type']), 'get_price_with_tax')
+            }), 'get_price_with_tax')
     amount_w_tax = fields.Function(Monetary('Amount with Tax',
         digits='currency', currency='currency',
         states={
             'invisible': ~Eval('type').in_(['line', 'subtotal']),
-            },
-        depends=['type']), 'get_price_with_tax')
+            }), 'get_price_with_tax')
 
     @classmethod
     def get_price_with_tax(cls, lines, names):
