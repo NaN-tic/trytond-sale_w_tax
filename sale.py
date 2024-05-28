@@ -3,14 +3,13 @@
 # the full copyright notices and license terms.
 from decimal import Decimal
 from trytond.model import fields
-from trytond.pool import PoolMeta, Pool
+from trytond.pool import PoolMeta
 from trytond.transaction import Transaction
 from trytond.pyson import Eval
 from trytond.modules.product import price_digits
 from trytond.modules.currency.fields import Monetary
 
-__all__ = ['SaleLine']
-_ZERO = Decimal('0.00')
+_ZERO = Decimal(0)
 
 
 class SaleLine(metaclass=PoolMeta):
@@ -30,18 +29,12 @@ class SaleLine(metaclass=PoolMeta):
 
     @classmethod
     def get_price_with_tax(cls, lines, names):
-        pool = Pool()
-        Tax = pool.get('account.tax')
         amount_w_tax = {}
         unit_price_w_tax = {}
 
         def compute_amount_with_tax(line):
-            tax_amount = Decimal('0.0')
-            if line.taxes:
-                tax_list = Tax.compute(line.taxes,
-                    line.unit_price or Decimal('0.0'),
-                    line.quantity or 0.0, line.tax_date)
-                tax_amount = sum([t['amount'] for t in tax_list], Decimal('0.0'))
+            tax_amount = sum(
+                        (v['amount'] for v in line._get_taxes().values()), Decimal(0))
             return line.amount + tax_amount
 
         for line in lines:
