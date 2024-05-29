@@ -36,8 +36,8 @@ class SaleLine(metaclass=PoolMeta):
             return line.amount + tax_amount
 
         for line in lines:
-            amount = Decimal('0.0')
-            unit_price = Decimal('0.0')
+            amount = Decimal(0)
+            unit_price = Decimal(0)
             currency = (line.sale.currency if line.sale else line.currency)
 
             if line.type == 'line':
@@ -56,7 +56,7 @@ class SaleLine(metaclass=PoolMeta):
                     elif line2.type == 'subtotal':
                         if line == line2:
                             break
-                        amount = Decimal('0.0')
+                        amount = Decimal(0)
 
             if currency:
                 amount = currency.round(amount)
