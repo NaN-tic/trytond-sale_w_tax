@@ -20,7 +20,7 @@ Imports::
 
 Install Modules::
 
-    >>> config = activate_modules(['sale_w_tax', 'sale_3_discounts'])
+    >>> config = activate_modules(['sale_w_tax', 'sale_discount', 'discount_formula'])
 
 Create company::
 
@@ -120,14 +120,14 @@ Sale products testing several on_change calls::
     >>> sale_line = sale.lines.new()
     >>> sale_line.product = product
     >>> sale_line.quantity = 1.0
-    >>> sale_line.discount1 = Decimal('1')
+    >>> sale_line.discount_formula = '1'
     >>> sale_line.unit_price == Decimal('0.00')
     True
     >>> sale_line.unit_price == Decimal('0.00')
     True
     >>> sale_line.amount_w_tax == Decimal('0.00')
     True
-    >>> sale_line.discount1 = Decimal('0.12')
+    >>> sale_line.discount_formula = '12'
     >>> sale_line.unit_price == Decimal('8.80')
     True
     >>> sale_line.unit_price_w_tax == Decimal('8.80')
