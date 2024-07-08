@@ -9,6 +9,7 @@ from trytond.tests.test_tryton import ModuleTestCase
 class SaleWTaxTestCase(CompanyTestMixin, ModuleTestCase):
     'Test SaleWTax module'
     module = 'sale_w_tax'
+    extras = ['sale_discount', 'discount_formula']
 
 
 del ModuleTestCase
