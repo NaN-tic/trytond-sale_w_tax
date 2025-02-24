@@ -26,6 +26,7 @@ class SaleLine(metaclass=PoolMeta):
             'invisible': ~Eval('type').in_(['line', 'subtotal']),
             }), 'get_amount_with_tax')
 
+    @fields.depends(methods=['_get_taxes'])
     def get_amount_with_tax(self, name=None):
         if self.type == 'line':
             if self.quantity:
@@ -69,4 +70,3 @@ class SaleLine(metaclass=PoolMeta):
         if not self.sale:
             self.sale = Transaction().context.get('sale')
         return self.get_amount_with_tax()
-
