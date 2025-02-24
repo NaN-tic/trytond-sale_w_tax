@@ -3,7 +3,7 @@
 # the full copyright notices and license terms.
 from decimal import Decimal
 from trytond.model import fields
-from trytond.pool import PoolMeta
+from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 from trytond.pyson import Eval
 from trytond.modules.product import price_digits
@@ -27,6 +27,8 @@ class SaleLine(metaclass=PoolMeta):
 
     @classmethod
     def get_price_with_tax(cls, lines, names):
+        Company = Pool().get('company.company')
+
         amount_w_tax = {}
         unit_price_w_tax = {}
 
@@ -35,10 +37,19 @@ class SaleLine(metaclass=PoolMeta):
                         (v['amount'] for v in line._get_taxes().values()), Decimal(0))
             return line.amount + tax_amount
 
+        company_id = Transaction().context.get('company', 0)
+        company = Company(company_id) if company_id > 0 else None
+
         for line in lines:
             amount = Decimal(0)
             unit_price = Decimal(0)
+
             currency = (line.sale.currency if line.sale else line.currency)
+            if not line.currency:
+                line.currency = currency
+
+            if not line.company:
+                line.company = company
 
             if line.type == 'line':
                 if line.quantity:
