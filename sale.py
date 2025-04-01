@@ -42,7 +42,7 @@ class SaleLine(metaclass=PoolMeta):
             amount = Decimal(0)
             for line in self.sale and self.sale.lines or []:
                 if line.type == 'line':
-                    amount += line.get_amount_with_tax()
+                    amount += line.get_amount_with_tax() or Decimal(0)
                 if line == self:
                     break
                 if line.type == 'subtotal':
