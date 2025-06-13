@@ -31,7 +31,7 @@ class SaleLine(metaclass=PoolMeta):
         if self.type == 'line':
             if self.quantity:
                 # Compute amount as we cannot depend on another computed field
-                tax_amount = sum((v['amount'] for v in self._get_taxes().values()),
+                tax_amount = sum((v.amount for v in self._get_taxes().values()),
                     Decimal(0))
                 amount = self.on_change_with_amount()
                 amount += tax_amount
