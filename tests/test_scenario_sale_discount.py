@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
         super().tearDown()
 
     def test(self):
-        config = activate_modules(['sale_w_tax', 'sale_discount'])
+        activate_modules(['sale_w_tax', 'sale_discount'])
 
         # Create company
         _ = create_company()
@@ -30,12 +30,10 @@ class Test(unittest.TestCase):
         fiscalyear = set_fiscalyear_invoice_sequences(
             create_fiscalyear(company))
         fiscalyear.click('create_period')
-        period = fiscalyear.periods[0]
 
         # Create chart of accounts
         _ = create_chart(company)
         accounts = get_accounts(company)
-        receivable = accounts['receivable']
         revenue = accounts['revenue']
         expense = accounts['expense']
 
@@ -73,7 +71,6 @@ class Test(unittest.TestCase):
 
         # Sale products testing several on_change calls
         Sale = Model.get('sale.sale')
-        SaleLine = Model.get('sale.line')
         sale = Sale()
         sale.party = customer
         sale_line = sale.lines.new()
