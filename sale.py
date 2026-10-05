@@ -28,6 +28,8 @@ class SaleLine(metaclass=PoolMeta):
 
     @fields.depends('sale', '_parent_sale.lines', methods=['_get_taxes'])
     def get_amount_with_tax(self, name=None):
+        if not self.sale:
+            return
         if self.type == 'line':
             if self.quantity:
                 # Compute amount as we cannot depend on another computed field
@@ -50,9 +52,7 @@ class SaleLine(metaclass=PoolMeta):
             return amount
 
     def get_unit_price_with_tax(self, name=None):
-        if self.type != 'line':
-            return
-        if not self.quantity:
+        if self.type != 'line' or not self.sale or not self.quantity:
             return
         amount = self.get_amount_with_tax()
         return round_price(amount / Decimal(str(self.quantity)))
